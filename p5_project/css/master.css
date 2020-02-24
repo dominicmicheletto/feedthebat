@@ -1,0 +1,210 @@
+@import url('https://fonts.googleapis.com/css?family=Anonymous+Pro|Lora|Ubuntu&display=swap');
+
+.ui-widget, body {
+  font-size: medium !important;
+  font-family: "Ubuntu", sans-serif !important;
+}
+
+body {
+  background: #555;
+}
+
+div#main {
+  margin: auto;
+  width: 80%;
+  background: #ddd;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Lora", "DejaVu Serif", serif;
+}
+
+h1#title {
+  border-bottom: thin solid #555;
+  text-align: center;
+}
+
+nav {
+  margin: 10px 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+  border-radius: 5px;
+}
+
+nav a {
+  float: left;
+  border-right: 1px solid #bbb;
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+nav a:hover:not(.current) {
+  background-color: #111;
+}
+
+nav a.current {
+  background-color: #D0021B;
+}
+
+nav a:last-child {
+  border-right: none;
+  float: right;
+}
+
+em {
+  color: #D0021B;
+}
+
+div#results p.no-results {
+  font-style: italic;
+  text-align: center;
+}
+
+label, legend {
+  font-weight: bold;
+}
+
+fieldset {
+  border-radius: 5px;
+}
+
+.ui-autocomplete-category {
+  font-weight: bold;
+  padding: .2em .4em;
+  margin: .8em 0 .2em;
+  line-height: 1.5;
+}
+
+.ui-autocomplete {
+  max-height: 100px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+table.styled, table.styled th, table.styled tr:first-child {
+	text-align: center;
+}
+
+table.styled tr td:not(:first-child) {
+  text-align: left;
+}
+
+table.styled * {
+	padding: 5px;
+}
+
+table.styled {
+	border: thin solid #ccc;
+	border-radius: 20px;
+	border-spacing: 0px;
+  overflow: hidden;
+}
+
+table.styled thead tr th:first-child {
+	border-right: thin solid #ccc;
+	border-left: none;
+}
+
+table.styled thead tr th {
+	border: thin solid #ccc;
+	border-top: none;
+}
+
+table.styled th {
+	background: #ddd;
+}
+
+table.styled thead tr th:last-child {
+	border-right: none;
+}
+
+table.styled tbody tr *:not(code):first-child {
+	border-right: thin solid #ccc;
+	border-bottom: thin solid #ccc;
+}
+
+table.styled tbody tr:last-child th {
+	border-bottom: none;
+}
+
+table.styled td {
+	border: thin solid #ccc;
+}
+
+table.styled tbody tr:last-child td:first-child {
+	border-left: none;
+	border-bottom: none;
+}
+
+table.styled tbody tr:last-child td:last-child {
+	border-right: none;
+	border-bottom: none;
+}
+
+code {
+  font-family: "Anonymous Pro", "DejaVu Sans Mono", monospace;
+  color: #D0021B;
+}
+
+div#tabs-2 {
+  clear: both;
+}
+
+div#server-widget {
+  float: right;
+  width: 400px;
+  border: thin solid #D0021B;
+  padding: 10px;
+  background: #eee;
+  margin-left: 10px;
+  border-radius: 5px;
+}
+
+div#server-widget h3 {
+  text-align: center;
+  border-bottom: thin dotted #ccc;
+}
+
+div#tabs-2-content {
+  width: 75%;
+  height: 800px;
+}
+
+div#footer {
+  text-align: center;
+  font-size: small;
+  font-style: italic;
+  color: #aaa;
+  margin-top: 5px;
+}
+
+h3.section-header {
+  margin-left: 10px;
+  padding: 10px;
+  border-bottom: thin solid #aaa;
+  width: 95%;
+}
+
+h3.section-header ~ p {
+  margin-left: 10px;
+  padding: 10px;
+  width: 95%;
+}
+
+#pagination {
+  padding: 10px;
+}
+
+.overflow {
+  height: 200px;
+}
+
+table#commands-table {
+  width: 100%;
+}
