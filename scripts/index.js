@@ -214,10 +214,10 @@
             console.log(canvas.currentColour);
 
             if (food.colour === canvas.currentColour) {
-              canvas.score += food.score;
+              canvas.score += food.score * canvas.speed;
             }
             else {
-              canvas.score -= food.score;
+              canvas.score -= food.score * canvas.speed;
             }
 
             hasEaten = true;
