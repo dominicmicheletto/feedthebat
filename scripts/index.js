@@ -3,6 +3,29 @@
   $(document).ready(function() {
     $("#tabs").tabs();
 
+    class State {
+      constructor(state) {
+        this.state = 0 || state;
+      }
+
+      getStateName() {
+        switch (this.state) {
+          case 0: {
+            return "ACTIVE";
+          }
+          case 1: {
+            return "WON";
+          }
+          case 2: {
+            return "LOST";
+          }
+          default: {
+            return "INVALID";
+          }
+        }
+      }
+    }
+
     class Ball {
       constructor(parent, x, y, colour, diameter) {
         this.location = (x && y) ? {x: x, y: y} : {x: 25, y: 25};
@@ -61,7 +84,10 @@
         this.score = 0;
         this.lost = false;
         this.won = false;
+        this.skips = 3;
+        this.state = new State();
         this.currentColour = null;
+        this.delta = {x: 0, y: 0};
         this.size = size || {width: 800, height: 400};
         this.objects = objects || {}; // associative array
       }
@@ -87,6 +113,127 @@
 
     new p5(function(p) {
       let bat, canvas;
+      let keymap = {
+        32: {
+          aliases: [48, 96],
+          useForKeyPress: true,
+          func: function(canvas, keycode) {
+            if (canvas.paused && [32, 48, 96].includes(p.keyCode)) {
+              canvas.paused = false;
+              canvas.speed = 1;
+            } else {
+              canvas.speed = 0;
+              canvas.paused = true;
+            }
+          }
+        },
+        49: {
+          aliases: [97],
+          useForKeyPress: true,
+          func: function(canvas, keyCode) {
+            canvas.speed = 1;
+            canvas.paused = false;
+          }
+        },
+        50: {
+          aliases: [98],
+          useForKeyPress: true,
+          func: function(canvas, keyCode) {
+            canvas.speed = 2;
+            canvas.paused = false;
+          }
+        },
+        51: {
+          aliases: [99],
+          useForKeyPress: true,
+          func: function(canvas, keyCode) {
+            canvas.speed = 3;
+            canvas.paused = false;
+          }
+        },
+        65: /*A*/ {
+          aliases: [p.LEFT_ARROW],
+          useForKeyPress: false,
+          func: function(canvas, keyCode) {
+            let delta = {x: 0, y: 0};
+
+            if (!(p.keyIsDown(p.LEFT_ARROW) && p.keyIsDown(p.RIGHT_ARROW))) {
+              delta.x = -5;
+            }
+
+            canvas.paused = false;
+            return delta;
+          }
+        },
+        68: /*D*/ {
+          aliases: [p.RIGHT_ARROW],
+          useForKeyPress: false,
+          func: function(canvas, keyCode) {
+            let delta = {x: 0, y: 0};
+
+            if (!(p.keyIsDown(p.LEFT_ARROW) && p.keyIsDown(p.RIGHT_ARROW))) {
+              delta.x = 5;
+            }
+
+            canvas.paused = false;
+            return delta;
+          }
+        },
+        78: /*N*/ {
+          aliases: [],
+          useForKeyPress: false,
+          func: function(canvas, keyCode, delta) {
+            if (canvas.skips == 0 || canvas.objects.food.length <= 1)
+              return;
+
+            let new_foods = [];
+            for (let i = 0; i < canvas.objects.food.length; i++) {
+              food = canvas.objects.food[i];
+
+            	if (food.colour === canvas.currentColour) {
+                canvas.skips -= 1;
+              	hasEaten = true;
+            	}
+              else {
+                new_foods.push(food);
+              }
+            }
+
+            canvas.currentColour = new_foods[0];
+            canvas.objects.food = new_foods;
+            $("span#skips").text(canvas.skips);
+            setColour();
+          }
+        },
+        83: /*S*/ {
+          aliases: [p.DOWN_ARROW],
+          useForKeyPress: false,
+          func: function(canvas, keyCode) {
+            let delta = {x: 0, y: 0};
+
+            if (!(p.keyIsDown(p.UP_ARROW) && p.keyIsDown(p.DOWN_ARROW))) {
+              delta.y = 5;
+            }
+
+            canvas.paused = false;
+            return delta;
+          }
+        },
+        87: /*W*/ {
+          aliases: [p.UP_ARROW],
+          useForKeyPress: false,
+          func: function(canvas, keyCode) {
+            let delta = {x: 0, y: 0};
+
+            if (!(p.keyIsDown(p.UP_ARROW) && p.keyIsDown(p.DOWN_ARROW))) {
+              delta.y = -5;
+            }
+
+            canvas.paused = false;
+            return delta;
+          }
+        }
+      }
 
       function getRandomInt(max) {
         return Math.floor(Math.random() * Math.floor(max));
@@ -94,6 +241,20 @@
 
       function getRandomColor() {
         return {r: getRandomInt(255), g: getRandomInt(255), b: getRandomInt(255)};
+      }
+
+      function setColour() {
+        let colour = canvas.currentColour;
+        let grey = (colour.r + colour.g + colour.b) / 3;
+
+        $("span#colour").css({
+          color: `rgb(${colour.r},${colour.g},${colour.b})`,
+          background: `rgb(${grey}, ${grey}, ${grey})`
+        });
+      }
+
+      function checkState() {
+
       }
 
       function makeFood(canvas, init) {
@@ -127,12 +288,29 @@
       p.setup = function() {
         canvas.draw();
         makeFood(canvas, true);
-        $("span#colour").css({
-          color: `rgb(${canvas.currentColour.r},${canvas.currentColour.g},${canvas.currentColour.b})`
-        });
+        setColour();
       };
       p.draw = function() {
-        canvas.draw();
+        let delta = {
+          x: 0,
+          y: 0
+        };
+        let hasMoved = false;
+        let keyCode = p.keyCode;
+
+        let wasPaused = canvas.paused;
+
+        for (key in keymap) {
+          let mapping = keymap[key];
+
+          if (keyCode == key || mapping.aliases.includes(keyCode)) {
+            delta = mapping.func(canvas, keyCode);
+            if (!delta) {
+              return;
+            }
+            break;
+          }
+        }
 
         if (canvas.lost) {
           p.textSize(30);
@@ -148,35 +326,9 @@
           return;
         }
 
-        if (canvas.paused) {
-          p.textSize(30);
-          p.fill(0);
-          p.text("Game paused. Press Space to continue or click anywhere.", 5, 100);
-          return;
-        }
-
-        let delta = {
-          x: 0,
-          y: 0
-        };
-
-        let hasMoved = false;
-
-        if (p.keyIsDown(p.LEFT_ARROW) || p.keyIsDown(p.RIGHT_ARROW)) {
-          if (!(p.keyIsDown(p.LEFT_ARROW) && p.keyIsDown(p.RIGHT_ARROW))) {
-            delta.x = (p.keyIsDown(p.LEFT_ARROW) ? -1 : 1) * 5;
-            hasMoved = true;
-          }
-        }
-
-        if (p.keyIsDown(p.UP_ARROW) || p.keyIsDown(p.DOWN_ARROW)) {
-          if (!(p.keyIsDown(p.UP_ARROW) && p.keyIsDown(p.DOWN_ARROW))) {
-            delta.y = (p.keyIsDown(p.UP_ARROW) ? -1 : 1) * 5;
-            hasMoved = true;
-          }
-        }
-
+        hasMoved = delta.x || delta.y;
         bat.move(delta.x * canvas.speed, delta.y * canvas.speed, canvas);
+
         let new_foods = [];
         let hasEaten = false;
         for (let i = 0; i < canvas.objects.food.length; i++) {
@@ -210,8 +362,6 @@
           }
 
           if (intersect(food_bonunds, bat_bounds)) {
-            console.log(food.colour);
-            console.log(canvas.currentColour);
 
             if (food.colour === canvas.currentColour) {
               canvas.score += food.score * canvas.speed;
@@ -227,14 +377,15 @@
           }
         }
 
-        if (hasEaten)
-          canvas.currentColour = new_foods[0].colour;
-
         canvas.objects.food = new_foods;
         if (canvas.objects.food.length == 0) {
           alert("You won!");
           canvas.won = true;
+          return;
         }
+
+        if (hasEaten)
+          canvas.currentColour = new_foods[0].colour;
 
         canvas.hasEaten = hasEaten;
 
@@ -246,6 +397,9 @@
         if (hasMoved && canvas.hasEaten) {
           makeFood(canvas);
         }
+
+        canvas.draw();
+        canvas.delta = delta;
       };
       p.mousePressed = function() {
         canvas.paused = false;
@@ -254,36 +408,25 @@
         $("span#speed").text(canvas.speed == 0 ? "Paused" : canvas.speed);
       }
       p.keyPressed = function() {
-        if (p.keyCode == 32 || p.keyCode == 48 || p.keyCode == 96) {
-          if (canvas.paused && p.keyCode == 32) {
-            canvas.paused = false;
-            canvas.speed = 1;
-          } else {
-            canvas.speed = 0;
-            canvas.paused = true;
+        let keyCode = p.keyCode;
+
+        for (key in keymap) {
+          let mapping = keymap[key];
+
+          if (keyCode == key || mapping.aliases.includes(keyCode)) {
+            if (mapping.useForKeyPress)
+              mapping.func(canvas, keyCode);
+            break;
           }
-        }
-        else if (canvas.paused) {
-          return;
-        }
-        else if (p.keyCode == 49 || p.keyCode == 97) {
-          canvas.speed = 1;
-          canvas.paused = false;
-        }
-        else if (p.keyCode == 50 || p.keyCode == 98) {
-          canvas.speed = 2;
-          canvas.paused = false;
-        }
-        else if (p.keyCode == 51 || p.keyCode == 98) {
-          canvas.speed = 3;
-          canvas.paused = false;
         }
 
         $("span#speed").text(canvas.speed == 0 ? "Paused" : canvas.speed);
         $("span#score").text(canvas.score);
-        $("span#colour").css({
-          color: `rgb(${canvas.currentColour.r},${canvas.currentColour.g},${canvas.currentColour.b})`
-        });
+        setColour();
+
+        canvas.draw();
+
+        return false;
       }
     }, 'game');
   });

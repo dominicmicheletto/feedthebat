@@ -3,12 +3,12 @@
   <head>
     <meta charset="iso-8859-7" />
     <title>Feed the Bat</title>
-    <link href="./css/master.css" rel="stylesheet" type="text/css" />
-    <script src="./scripts/p5.min.js" type="text/javascript"></script>
+    <link href="css/master.css" rel="stylesheet" type="text/css" />
+    <script src="scripts/p5.min.js" type="text/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="./scripts/index.js" type="text/javascript"></script>
+    <script src="scripts/index.js" type="text/javascript"></script>
     </head>
   <body class="ui-widget">
     <div id="main">
@@ -24,9 +24,21 @@
           <li><a href="#tabs-1">Let's Play!</a></li>
         </ul>
         <div id="tabs-1">
-          <p>Speed: <span id="speed">1</span></p>
-          <p>Score: <span id="score">0</span></p>
-          <p>Colour: <span id="colour">Get This Colour to Score</span></p>
+          <table>
+            <tr>
+              <th>Score</th>
+              <td><span id="score">0</span></td>
+              <th>Skips</th>
+              <td><span id="skips">3</span></td>
+              <th>Speed</th>
+              <td><span id="speed">1</span></td>
+            </tr>
+            <tr>
+              <th>Current Colour</th>
+              <td colspan="5"><span id="colour">You're current looking for this color</span></td>
+            </tr>
+          </table>
+          <p>&nbsp;</p>
           <div id="game"></div>
         </div>
       </div>
